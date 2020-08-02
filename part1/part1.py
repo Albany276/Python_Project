@@ -76,7 +76,6 @@ def process_weather(forecast_file):
     with open(forecast_file) as json_file: 
         json_data = json.load(json_file) 
     
-    counter = 0
     count_min_temp = 0
     count_max_temp = 0
     min_temp_C_total = 0
@@ -88,6 +87,7 @@ def process_weather(forecast_file):
     Day_rain = []
     Night_phrase =[]
     Night_rain = []
+    b_total = ""
 
 
     #Json_data is a dictionary with 2 keys, Headline and DailyForecasts
@@ -212,35 +212,42 @@ def process_weather(forecast_file):
     
     
     num_days = len(date_list)
-    # a = f"TEST {num_days} Day Overview"
-    # return a
-    print(f"{num_days} Day Overview")
-    print(f"    The lowest temperature will be {overall_min_temp_formatted}, and will occur on {date_overall_min_temp}.")
-    print(f"    The highest temperature will be {overall_max_temp_formatted}, and will occur on {date_overall_max_temp}.")
-    print(f"    The average low this week is {min_temp_mean_formatted}.")
-    print(f"    The average high this week is {max_temp_mean_formatted}.")
-    print()
+    #a = f"{num_days} Day Overview\n    The lowest temperature will be {overall_min_temp_formatted}, and will occur on {date_overall_min_temp}.\n    The highest temperature will be {overall_max_temp_formatted}, and will occur on {date_overall_max_temp}.\n    The average low this week is {min_temp_mean_formatted}.\n    The average high this week is {max_temp_mean_formatted}."
+   
+    #The function needs to return a single string in the right format. Preparing first paragraph:
+    a0 = f"{num_days} Day Overview"
+    a1 = f"\n    The lowest temperature will be {overall_min_temp_formatted}, and will occur on {date_overall_min_temp}."
+    a2 = f"\n    The highest temperature will be {overall_max_temp_formatted}, and will occur on {date_overall_max_temp}."
+    a3 = f"\n    The average low this week is {min_temp_mean_formatted}."
+    a4 = f"\n    The average high this week is {max_temp_mean_formatted}."
+    a_total = a0 + a1 + a2 + a3 + a4
 
-    while counter < len(date_list): #this works because all lists are the same lenght
-        
-        print(f"--------{date_list[counter]} --------")
+    counter = len(date_list) - 1
+
+    while counter >= 0: #this works because all lists are the same lenght - starting from len of list to zero, so the resulting string gets saved on the right order
+
         #Formatting min temp
         min_temp_C_string = str(min_temp_list[counter]) #converting to string in order to use format temp function
         min_temp_C_formatted = format_temperature(min_temp_C_string) #adding Celsius degrees to the temp format
-        print(f"Minimum Temperature: {min_temp_C_formatted}")
 
         #Formatting max temp
         max_temp_C_string = str(max_temp_list[counter]) #converting to string to be able to use the format temp function
         max_temp_C_formatted = format_temperature(max_temp_C_string)
-        print(f"Maximum Temperature: {max_temp_C_formatted}")
+  
+        #Preparing the second part of the output - it all needs to be part of one string
+        b0 = f"\n-------- {date_list[counter]} --------"
+        b1 = f"\nMinimum Temperature: {min_temp_C_formatted}"
+        b2 = f"\nMaximum Temperature: {max_temp_C_formatted}"
+        b3 = f"\nDaytime: {Day_phrase[counter]}"
+        b4 = f"\n    Chance of rain:  {Day_rain[counter]}%"
+        b5 = f"\nNighttime: {Night_phrase[counter]}"
+        b6 = f"\n    Chance of rain:  {Night_rain[counter]}%"
 
-        print(f"Daytime: {Day_phrase[counter]}")
-        print(f"    Chance of rain:  {Day_rain[counter]}%")
-        print(f"Nighttime: {Night_phrase[counter]}")
-        print(f"    Chance of rain:  {Night_rain[counter]}%")
-        print()
-        
-        counter = counter + 1
+        b_total =  "\n" + b0 + b1 + b2 + b3 + b4 + b5 + b6 + b_total
+        counter = counter -1
+
+    resulting_string = a_total + b_total +"\n" + "\n"
+    return resulting_string
 
 
 if __name__ == "__main__":
