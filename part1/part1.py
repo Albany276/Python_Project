@@ -125,18 +125,13 @@ def process_weather(forecast_file):
                                     #we are after key3=value which contains the temp value
                                     if key3 == "Value":
                                         
-
                                         min_temp = int(value3) #this temp is in Farenheit
                                         min_temp_C = convert_f_to_c(min_temp) #converting to Celsius
+                                        min_temp_list.append(min_temp_C) #holding all values in a list - creating list with temp in int rather than str so we can perform min and max functions on the list without issues.
 
                                         #Preparing for using the mean function
                                         count_min_temp = count_min_temp + 1 #This will hold the number of items
                                         min_temp_C_total = min_temp_C + min_temp_C_total #This will hold the total
-
-                                        min_temp_C_string = str(min_temp_C) #converting to string in order to use format temp function
-                                        min_temp_C_formatted = format_temperature(min_temp_C_string)
-                                        min_temp_list.append(min_temp_C_formatted) #holding all values in a list
-                                        # print(f"MIN temp value is {min_temp_C_formatted}")
 
                             if key2 == "Maximum":   
                                 # print("Max") 
@@ -145,15 +140,11 @@ def process_weather(forecast_file):
                                     if key4 == "Value":
                                         max_temp = int(value4) #this temp is in Farenheit
                                         max_temp_C = convert_f_to_c(max_temp) #converting to Celsius
+                                        max_temp_list.append(max_temp_C) #holding all values in a list - creating list with temp in int rather than str so we can perform min and max functions on the list without issues.
 
                                         #Preparing for using the mean function
                                         count_max_temp = count_max_temp + 1 #This will hold the number of items
                                         max_temp_C_total = max_temp_C + max_temp_C_total #This will hold the total
-
-                                        max_temp_C_string = str(max_temp_C) #converting to string to be able to use the format temp function
-                                        max_temp_C_formatted = format_temperature(max_temp_C_string)
-                                        max_temp_list.append(max_temp_C_formatted) #holding all values in a list
-                                        #print(f"MAX temp value is {max_temp_C_formatted}")
 
                     #Day is a dictionary whitin the parcel dictionary                
                     if key1 == "Day":
@@ -183,48 +174,78 @@ def process_weather(forecast_file):
                                 Night_rain.append(n_rain_prob) #holding all values in a list
                                 # print(f"Night rain prob is {n_rain_prob}%")
 
+    #Preparing for heading to be printed with min/max and average(mean) temps
+    
+    #OVERALL MIN TEMP
+    overall_min_temp = min(min_temp_list) #Calculates the min value in the min_temp list
+    overall_min_temp_formatted = format_temperature(str(overall_min_temp))#formatting temp
+    # print(f"TYPE OF MIN value: {type(overall_min_temp_formatted)}")
+    
+    #Also need the date when overall min happens, so will use index function to find the position of overall min temp on the list
+    min_pos = min_temp_list.index(overall_min_temp) 
+    #Therefore the date we are looking for happens in date_list in position min_pos
+    date_overall_min_temp = date_list[min_pos]
 
-    min_temp_mean = calculate_mean(min_temp_C_total, count_min_temp)
-    max_temp_mean = calculate_mean(max_temp_C_total, count_max_temp)
-    # print(f"Min mean {min_temp_mean}")
-    # print(f"Max mean {max_temp_mean}")
-
-    # print()
-    # print(f"Dates: {date_list}")
-    print(f"Min Temp: {min_temp_list}")
-    print(f"Max Temp: {max_temp_list}")
-    # print(f"Day Phrases: {Day_phrase}")
-    # print(f"Day Rain %: {Day_rain}")
-    # print(f"Night Phrases: {Night_phrase}")
-    # print(f"Nigh Rain %: {Night_rain}")
-
-    overall_min_temp = min([8.3, 10.6, 14.4, 14.4, 10.6])
-    #overall_min_temp = min(min_temp_list) #Calculates the min value in the min_temp list
+    #OVERALL MAX TEMP
     overall_max_temp = max(max_temp_list) #Calculates the max value in the max_temp list
-    print(f"MIN: {overall_min_temp}")
-    print(f"MAX: {overall_max_temp}")
+    overall_max_temp_formatted = format_temperature(str(overall_max_temp)) #formatting temp
 
+     #Also need the date when overall max happens, so will use index function to find the position of overall max temp on the list
+    max_pos = max_temp_list.index(overall_max_temp)
+    #Therefore the date we are looking for happens in date_list in position max_pos
+    date_overall_max_temp = date_list[max_pos]
+
+    #AVERAGE MIN TEMP
+    #Calculating mean min temp - the arguments are already in celsius, so the mean would also be in celsius
+    min_temp_mean = calculate_mean(min_temp_C_total, count_min_temp)
+    #Formatting mean min temp
+    min_temp_mean_string = str(min_temp_mean)
+    min_temp_mean_formatted = format_temperature(min_temp_mean_string)
+    # print(f"TYPE OF MIN value: {type(min_temp_mean_formatted)}")
+
+    #AVERAGE MAX TEMP
+    max_temp_mean = calculate_mean(max_temp_C_total, count_max_temp)
+    #Formatting mean max temp
+    max_temp_mean_string = str(max_temp_mean)
+    max_temp_mean_formatted = format_temperature(max_temp_mean_string)
+
+    
+    
+    num_days = len(date_list)
+    # a = f"TEST {num_days} Day Overview"
+    # return a
+    print(f"{num_days} Day Overview")
+    print(f"    The lowest temperature will be {overall_min_temp_formatted}, and will occur on {date_overall_min_temp}.")
+    print(f"    The highest temperature will be {overall_max_temp_formatted}, and will occur on {date_overall_max_temp}.")
+    print(f"    The average low this week is {min_temp_mean_formatted}.")
+    print(f"    The average high this week is {max_temp_mean_formatted}.")
+    print()
 
     while counter < len(date_list): #this works because all lists are the same lenght
         
         print(f"--------{date_list[counter]} --------")
-        print(f"Minimum Temperature: {min_temp_list[counter]}")
-        print(f"Maximum Temperature: {max_temp_list[counter]}")
+        #Formatting min temp
+        min_temp_C_string = str(min_temp_list[counter]) #converting to string in order to use format temp function
+        min_temp_C_formatted = format_temperature(min_temp_C_string) #adding Celsius degrees to the temp format
+        print(f"Minimum Temperature: {min_temp_C_formatted}")
+
+        #Formatting max temp
+        max_temp_C_string = str(max_temp_list[counter]) #converting to string to be able to use the format temp function
+        max_temp_C_formatted = format_temperature(max_temp_C_string)
+        print(f"Maximum Temperature: {max_temp_C_formatted}")
+
         print(f"Daytime: {Day_phrase[counter]}")
-        print(f"      Chance of rain: {Day_rain[counter]}%")
+        print(f"    Chance of rain:  {Day_rain[counter]}%")
         print(f"Nighttime: {Night_phrase[counter]}")
-        print(f"      Chance of rain: {Night_rain[counter]}%")
+        print(f"    Chance of rain:  {Night_rain[counter]}%")
         print()
         
         counter = counter + 1
 
 
-    pass
-
-
 if __name__ == "__main__":
-    #print(process_weather("data/forecast_5days_a.json"))
-    process_weather("data/forecast_5days_a.json")
+    print(process_weather("data/forecast_5days_a.json"))
+
 
 
 
