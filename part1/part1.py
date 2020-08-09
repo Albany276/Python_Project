@@ -251,7 +251,7 @@ def process_weather(forecast_file):
 
 
 if __name__ == "__main__":
-    print(process_weather("data/forecast_5days_a.json"))
+    print(process_weather("data/forecast_5days_b.json"))
 
 
 

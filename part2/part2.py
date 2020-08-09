@@ -2,6 +2,7 @@ import json
 import plotly.express as px
 from datetime import datetime
 
+
 DEGREE_SYBMOL = u"\N{DEGREE SIGN}C"
 
 def format_temperature(temp):
@@ -39,23 +40,7 @@ def convert_f_to_c(temp_in_farenheit):
     return temp_in_celsius
     
 
-
-def calculate_mean(total, num_items):
-    """Calculates the mean.
-    
-    Args:
-        total: integer representing the sum of the numbers.
-        num_items: integer representing the number of items counted.
-    Returns:
-        An integer representing the mean of the numbers.
-    """
-    mean1 = total / num_items
-    mean1 = round(mean1, 1) #limiting to 1 decimal place
-    return mean1
-
-
-
-def process_weather(forecast_file):
+def graph_weather(forecast_file):
 
     #Daily forecast contains data per day
     #Daily forecast is a list of dictionaries. 
@@ -171,61 +156,73 @@ def process_weather(forecast_file):
                                         rfts_min_F = int(value3) #temp in Farenheit
                                         rfts_min_C = convert_f_to_c(rfts_min_F) #converting to Celsius
                                         rfts_min_list.append(rfts_min_C) #holding all values in a list
-                                        # print(f"Daytime: {daytime_phrase}")
+                                       
 
-    # print(f"Dates: {date_list}")
-    # print(f"Temp Min: {min_temp_list}")
-    # print(f"Temp Max: {max_temp_list}")
+   
+    print(f"Temp Min: {min_temp_list}")
+    print(f"Temp Max: {max_temp_list}")
     # print(f"RFT Min: {rft_min_list}")
     # print(f"RFTS Min: {rfts_min_list}")
     
     num_days = len(date_list)
 
-    
+    #GRAPH1:
+    #Plotting Min and Max temperatures in the same chart
     fig = px.line(  
-        df,
-        x= date_list,
-        y= min_temp_list,
-        title="Min temp"
+        x=date_list,
+        y=[min_temp_list, max_temp_list],
+        title=f"Min and Max temperatures in Perth over {num_days} days"
         )
-    # fig.show()
+    
+    #Setting the colours and the names that will be used on the legend
+    fig.data[0].name = "Min temperatures"
+    fig.data[0].line.color = "#9400D3"
+    fig.data[1].name = "Max temperatures"
+    fig.data[1].line.color = "#FFA500"
+    
+    #Updating the titles of the axis and legend
+    fig.update_layout(
+        xaxis_title="Dates",
+        yaxis_title="Temperature (°C)",
+        legend_title_text="Legend:")
 
-    fig.write_html("Test1.html") 
+
+    fig.write_html("Graph1.html") 
+    # print(fig)
+
+    #GRAPH2:
+    #Plotting Min, Min Real Feel and Min Real Feel Shade in the same chart
+    fig = px.line(  
+        x=date_list,
+        y=[min_temp_list, rft_min_list, rfts_min_list],
+        title=f"Min, Min Real Feel and Min Real Feel Shade temperatures in Perth over {num_days} days"
+        )
+    
+    #Setting the colours and the names that will be used on the legend
+    fig.data[0].name = "Min temperatures"
+    fig.data[0].line.color = "#9400D3"
+    fig.data[1].name = "Min Real Feel temperatures"
+    fig.data[1].line.color = "#FFA500"
+    fig.data[1].line.dash = "dot"
+    fig.data[2].name = "Min Real Feel Shade temperatures"
+    fig.data[2].line.color = "#C0C0C0"
+    fig.data[2].line.dash = "dash"
+    #fig.data[2].mode = "markers"
+    
+    
+    #Updating the titles of the axis and legend
+    fig.update_layout(
+        xaxis_title="Dates",
+        yaxis_title="Temperature (°C)",
+        legend_title_text="Legend:")
 
 
-
-    #a = f"{num_days} Day Overview\n    The lowest temperature will be {overall_min_temp_formatted}, and will occur on {date_overall_min_temp}.\n    The highest temperature will be {overall_max_temp_formatted}, and will occur on {date_overall_max_temp}.\n    The average low this week is {min_temp_mean_formatted}.\n    The average high this week is {max_temp_mean_formatted}."
-   
-
-
-    # counter = len(date_list) - 1
-
-    # while counter >= 0: #this works because all lists are the same lenght - starting from len of list to zero, so the resulting string gets saved on the right order
-
-    #     #Formatting min temp
-    #     min_temp_C_string = str(min_temp_list[counter]) #converting to string in order to use format temp function
-    #     min_temp_C_formatted = format_temperature(min_temp_C_string) #adding Celsius degrees to the temp format
-
-    #     #Formatting max temp
-    #     max_temp_C_string = str(max_temp_list[counter]) #converting to string to be able to use the format temp function
-    #     max_temp_C_formatted = format_temperature(max_temp_C_string)
-  
-    #     #Preparing the second part of the output - it all needs to be part of one string
-    #     b0 = f"\n-------- {date_list[counter]} --------"
-    #     b1 = f"\nMinimum Temperature: {min_temp_C_formatted}"
-    #     b2 = f"\nMaximum Temperature: {max_temp_C_formatted}"
-    #     b3 = f"\nDaytime: {Day_phrase[counter]}"
-    #     b4 = f"\n    Chance of rain:  {Day_rain[counter]}%"
-    #     b5 = f"\nNighttime: {Night_phrase[counter]}"
-    #     b6 = f"\n    Chance of rain:  {Night_rain[counter]}%"
-
-    #     b_total =  "\n" + b0 + b1 + b2 + b3 + b4 + b5 + b6 + b_total
-    #     counter = counter -1
-
-    # resulting_string = a_total + b_total +"\n" + "\n"
-    # return resulting_string
+    fig.write_html("Graph2.html") 
+    # print(fig)
 
 
 if __name__ == "__main__":
-    print(process_weather("data/forecast_5days_a.json"))
+   graph_weather("data/forecast_5days_b.json")
+
+
 
