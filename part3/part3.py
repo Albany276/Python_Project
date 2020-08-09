@@ -1,5 +1,5 @@
 import json
-# import plotly.express as px
+import plotly.express as px
 from datetime import datetime
 
 
@@ -51,7 +51,7 @@ def graph_weather(forecast_file):
     #Step 1: 
     #Need to be able to read each Date dict, and within than read temp for max and min
 
-    """Converts raw weather data into meaningful text.
+    """Converts raw weather data into meaningful text, generates the relevant graphs and output txt file
 
     Args:
         forecast_file: A string representing the file path to a file
@@ -67,6 +67,8 @@ def graph_weather(forecast_file):
     temp_list = []
     rftemp_list = []  
     wtxt_list = []  
+    wqty_list = []
+    wtxt2_list = []
     w_dict = {}
     precip_list = []
     counter = 0
@@ -75,20 +77,10 @@ def graph_weather(forecast_file):
     daylight_hours = 0
     UVindex_list = []
 
+    x1_list = []
+    counter_aux = 0
 
-    count_min_temp = 0
-    count_max_temp = 0
-    min_temp_C_total = 0
-    max_temp_C_total = 0
-
-    min_temp_list = []
-    max_temp_list = []
-
-    rft_min_list = []
-    rfts_min_list = []
-
-    #Json_data is a dictionary with 2 keys, Headline and DailyForecasts
-    
+    #Extracting data from json file
     for parcel in json_data:
         for key, value in parcel.items():
             if key == "LocalObservationDateTime":
@@ -149,66 +141,11 @@ def graph_weather(forecast_file):
                 UVindex = int(value)
                 UVindex_list.append(UVindex)
                 
-   
-    # num_days = len(date_list)
 
-    # #GRAPH1:
-    # #Plotting Min and Max temperatures in the same chart
-    # fig = px.line(  
-    #     x=date_list,
-    #     y=[min_temp_list, max_temp_list],
-    #     title=f"Min and Max temperatures in Perth over {num_days} days"
-    #     )
-    
-    # #Setting the colours and the names that will be used on the legend
-    # fig.data[0].name = "Min temperatures"
-    # fig.data[0].line.color = "#9400D3"
-    # fig.data[1].name = "Max temperatures"
-    # fig.data[1].line.color = "#FFA500"
-    
-    # #Updating the titles of the axis and legend
-    # fig.update_layout(
-    #     xaxis_title="Dates",
-    #     yaxis_title="Temperature (°C)",
-    #     legend_title_text="Legend:")
-
-
-    # fig.write_html("Graph1.html") 
-    # # print(fig)
-
-    # #GRAPH2:
-    # #Plotting Min, Min Real Feel and Min Real Feel Shade in the same chart
-    # fig = px.line(  
-    #     x=date_list,
-    #     y=[min_temp_list, rft_min_list, rfts_min_list],
-    #     title=f"Min, Min Real Feel and Min Real Feel Shade temperatures in Perth over {num_days} days"
-    #     )
-    
-    # #Setting the colours and the names that will be used on the legend
-    # fig.data[0].name = "Min temperatures"
-    # fig.data[0].line.color = "#9400D3"
-    # fig.data[1].name = "Min Real Feel temperatures"
-    # fig.data[1].line.color = "#FFA500"
-    # fig.data[1].line.dash = "dot"
-    # fig.data[2].name = "Min Real Feel Shade temperatures"
-    # fig.data[2].line.color = "#C0C0C0"
-    # fig.data[2].line.dash = "dash"
-    # #fig.data[2].mode = "markers"
-    
-    
-    # #Updating the titles of the axis and legend
-    # fig.update_layout(
-    #     xaxis_title="Dates",
-    #     yaxis_title="Temperature (°C)",
-    #     legend_title_text="Legend:")
-
-
-    # fig.write_html("Graph2.html") 
-    # # print(fig)
-    print(date_list)
-    print(temp_list)
-    print(rftemp_list)
-    print(wtxt_list)
+    # print(date_list)
+    # print(f"Temp: {temp_list}")
+    # print(f"Real Feel Temp: {rftemp_list}")
+    print(precip_list)
 
     #Determine the number of times the same weather text category appears in the weather text list by creating a dictionary
     for parcel in wtxt_list:
@@ -217,9 +154,13 @@ def graph_weather(forecast_file):
         else:
             w_dict[parcel] = 1
 
-    for key3, value3 in w_dict.items():
-        print(key3, value3)
+    for key in w_dict:
+        wtxt2_list.append(key)
+        wqty_list.append(w_dict[key])
 
+#    # print(f"Dict = {w_dict} {len(w_dict)}")
+#     print(f"Weather: {wtxt2_list}")
+#     print(f"Weather 2: {wqty_list}")
 
     #Determine when the min and max temp occurred
     # MIN TEMP
@@ -245,20 +186,65 @@ def graph_weather(forecast_file):
     max_UV_pos = UVindex_list.index(max_UV)
     date_max_UV = date_list[max_UV_pos]
 
+    #Preparing text to be written into text file
+    a0 = f"MIN temperature recorded was: {min_temp_formatted} and it occurred on {date_min_temp} \n"
+    a1 = f"MAX temperature recorded was: {max_temp_formatted} and it occurred on {date_max_temp} \n"    
+    a2 = f"Amount of precipitation that fell in the last 24 hours (24hrs from {date_list[0]}) was {precip_24hrs}mm \n"
+    a3 = f"Precipitation has been recorded for {precip_hours}hrs \n"
+    a4 = f"Daylight has been recorded for {daylight_hours}hrs \n"
+    a5 = f"MAX UV index recorded was: {max_UV} and it occurred on {date_max_UV} \n"
+    num_hours = len(date_list)
 
-    print(f"MIN TEMP value: {min_temp_formatted} and date {date_min_temp}")
-    print(f"MAX TEMP value: {max_temp_formatted} and date {date_max_temp}")
+    #GRAPH1 
+    #Plotting two box plots containing temp and real feel temp
+
+    #Creating the X labels for the box plot graph
+    while counter_aux < num_hours/2:
+        x1_list.append("Temperature")
+        counter_aux = counter_aux + 1
     
-    print(f"Precipitation in the last 24 hours (24hrs from {date_list[0]}) has been {precip_24hrs}mm")
-    print(f"Precipitation has been recorded for {precip_hours} hrs")
-    print(precip_list)
+    counter_aux = 0
+    while counter_aux < num_hours/2:
+        x1_list.append("Temperature Real Feel")
+        counter_aux = counter_aux + 1
 
-    print(f"daylight has been recorded for {daylight_hours} hrs")
-    print(daylight_list)
+    # print(f"X1: {x1_list}")    
 
-    print(f"MAX UV index is: {max_UV} and it occurred in {date_max_UV}")
-    print(UVindex_list)
+    fig = px.box(
+        x=x1_list, 
+        y=[temp_list,rftemp_list], 
+        points="all", 
+        title=f"Temp and Real Feel Temp in Perth over {num_hours} hours"
+        )
 
+
+    fig.update_layout(
+        xaxis_title=f"Date Range from {date_list[len(date_list)-1]} to {date_list[0]}",
+        yaxis_title="Temperature (°C)",
+        )
+
+    fig.write_html("Graph1.html") 
+    # print(fig)
+
+    #GRAPH 2 - Bar Chart
+
+    fig = px.bar(x=wtxt2_list, y=wqty_list, barmode="group", title="Weather text categories")
+    fig.update_layout(
+        xaxis_title="Weather Text Category",
+        yaxis_title="Number of times category appears in data file",
+        )
+
+    fig.write_html("Graph2_bar.html")
+    # print(fig)
+
+    with open("part3_output.txt", "w") as txt_file: #in this case specifying to open the file for writing by passing the 'w' 
+        txt_file.write(f"Data file: {forecast_file} \n \n")
+        txt_file.write(a0)
+        txt_file.write(a1)
+        txt_file.write(a2)
+        txt_file.write(a3)
+        txt_file.write(a4)
+        txt_file.write(a5)
 
 if __name__ == "__main__":
    graph_weather("data/historical_6hours.json")

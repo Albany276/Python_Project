@@ -1,0 +1,8 @@
+Data file: data/historical_6hours.json 
+ 
+MIN temperature recorded was: 18°C and it occurred on Monday 22 June 2020 15:55 
+MAX temperature recorded was: 21°C and it occurred on Monday 22 June 2020 13:55 
+Amount of precipitation that fell in the last 24 hours (24hrs from Monday 22 June 2020 15:55) was 0.5mm 
+Precipitation has been recorded for 2hrs 
+Daylight has been recorded for 6hrs 
+MAX UV index recorded was: 3 and it occurred on Monday 22 June 2020 13:55 
